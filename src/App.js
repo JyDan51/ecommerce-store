@@ -9,7 +9,7 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import AuthPage from "./pages/AuthPage";
 import ProductPage from "./pages/ProductPage";
-import { CartProvider } from "./context/CartContext";
+import CartProvider from './context/CartContext';
 
 function App() {
   return (

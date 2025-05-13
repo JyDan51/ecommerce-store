@@ -1,17 +1,24 @@
-// src/context/CartContext.jsx
-import React, { createContext, useState, useContext } from "react";
+// CartContext.jsx - Глобальный контекст корзины
+import React, { createContext, useState, useEffect } from 'react';
 
-const CartContext = createContext();
+export const CartContext = createContext();
 
-export const useCart = () => useContext(CartContext);
-
-export const CartProvider = ({ children }) => {
+const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) setCart(JSON.parse(savedCart));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
 
   const addToCart = (product) => {
     setCart((prevCart) => {
-      const existing = prevCart.find((item) => item.id === product.id);
-      if (existing) {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem) {
         return prevCart.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
@@ -24,13 +31,21 @@ export const CartProvider = ({ children }) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
   };
 
-  const clearCart = () => {
-    setCart([]);
+  const updateQuantity = (productId, quantity) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.id === productId ? { ...item, quantity } : item
+      )
+    );
   };
 
+  const clearCart = () => setCart([]);
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart }}>
       {children}
     </CartContext.Provider>
   );
 };
+
+export default CartProvider;

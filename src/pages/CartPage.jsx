@@ -1,37 +1,49 @@
-// src/pages/CartPage.jsx
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useCart } from "../context/CartContext";
-import "../style/CartPage.css";
+// CartPage.jsx - Контроль корзины
+import React, { useContext } from 'react';
+import '../style/CartPage.css';
+import { CartContext } from '../context/CartContext';
 
 function CartPage() {
-  const { cart, removeFromCart } = useCart();
-  const navigate = useNavigate();
+  const { cart, addToCart, removeFromCart, clearCart, updateQuantity } = useContext(CartContext);
+
+  const handleQuantityChange = (productId, newQuantity) => {
+    if (newQuantity > 0) {
+      updateQuantity(productId, newQuantity);
+    } else {
+      removeFromCart(productId);
+    }
+  };
 
   return (
-    <div className="cart-page">
+    <div className='cart-page'>
       <h2>Your Cart</h2>
       {cart.length > 0 ? (
-        <div className="cart-list">
+        <div className='cart-list'>
           {cart.map((item) => (
-            <div className="cart-item" key={item.id}>
-              <img src={item.image} alt={item.name} className="cart-item-image" />
-              <div className="cart-info">
+            <div className='cart-item' key={item.id}>
+              <img src={item.image} alt={item.name} />
+              <div className='cart-info'>
                 <h4>{item.name}</h4>
                 <p>{item.price} € x {item.quantity}</p>
+                <div className='quantity-controls'>
+                  <button onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>-</button>
+                  <span>{item.quantity}</span>
+                  <button onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>+</button>
+                </div>
               </div>
-              <button className="remove-btn" onClick={() => removeFromCart(item.id)}>Remove</button>
+              <button className='remove-btn' onClick={() => removeFromCart(item.id)}>Remove</button>
             </div>
           ))}
         </div>
       ) : (
-        <p className="empty-cart">Your cart is empty</p>
+        <p>Your cart is empty</p>
       )}
 
       {cart.length > 0 && (
-        <div className="cart-summary">
+        <div className='cart-summary'>
           <h3>Total: {cart.reduce((total, item) => total + item.price * item.quantity, 0)} €</h3>
-          <button className="checkout-btn" onClick={() => navigate("/checkout")}>Proceed to Checkout</button>
+          <button className='checkout-btn' onClick={clearCart}>Clear Cart</button>
+          <button className='checkout-btn'>Proceed to Checkout</button>
         </div>
       )}
     </div>
