@@ -1,43 +1,53 @@
 // src/pages/ProductPage.jsx
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 import "../style/ProductPage.css";
 
-// Пример данных (замени на свои)
+// Продукты (пример)
 const sampleProducts = Array.from({ length: 20 }, (_, i) => ({
   id: i + 1,
   name: `Product ${i + 1}`,
-  description: "A high-quality product for your style.",
   price: Math.floor(Math.random() * 20000) + 500,
   image: "/images/product.png",
-  brand: ["Nike", "Adidas", "Puma"][Math.floor(Math.random() * 3)],
-  color: ["Black", "White", "Red", "Blue", "Green"][Math.floor(Math.random() * 5)],
-  size: ["S", "M", "L", "XL", "XXL"][Math.floor(Math.random() * 5)],
-  material: ["Cotton", "Leather", "Wool"][Math.floor(Math.random() * 3)],
+  description: "High-quality product made with premium materials.",
 }));
 
 function ProductPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const [favorites, setFavorites] = useState([]);
   const product = sampleProducts.find((p) => p.id === parseInt(id));
 
+  const toggleFavorite = () => {
+    setFavorites((prevFavorites) => {
+      const isFavorite = prevFavorites.some((item) => item.id === product.id);
+      return isFavorite
+        ? prevFavorites.filter((item) => item.id !== product.id)
+        : [...prevFavorites, product];
+    });
+  };
+
   if (!product) {
-    return <p>Product not found.</p>;
+    return <p className="not-found">Product not found.</p>;
   }
 
   return (
     <div className="product-page">
       <div className="product-details">
         <img src={product.image} alt={product.name} className="product-image-large" />
+        
+        {/* Кнопка избранного под фото */}
+        <div className="favorite-icon" onClick={toggleFavorite}>
+          {favorites.some((item) => item.id === product.id) ? "❤️" : "🤍"}
+        </div>
+
         <div className="product-info">
           <h2>{product.name}</h2>
-          <p>{product.description}</p>
-          <p><strong>Price:</strong> {product.price} €</p>
-          <p><strong>Brand:</strong> {product.brand}</p>
-          <p><strong>Color:</strong> {product.color}</p>
-          <p><strong>Size:</strong> {product.size}</p>
-          <p><strong>Material:</strong> {product.material}</p>
-          <button onClick={() => navigate("/cart")} className="add-to-cart-btn">
+          <p className="product-description">{product.description}</p>
+          <p className="product-price">{product.price} €</p>
+
+          <button className="add-to-cart-btn" onClick={() => addToCart(product)}>
             Add to Cart
           </button>
         </div>
