@@ -1,5 +1,5 @@
-// src/pages/CheckoutPage.jsx
 import React, { useState } from "react";
+import { placeOrder } from "../api/orders";
 import "../style/CheckoutPage.css";
 
 function CheckoutPage() {
@@ -14,6 +14,7 @@ function CheckoutPage() {
   });
 
   const [errors, setErrors] = useState({});
+  const token = localStorage.getItem('token');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,10 +23,9 @@ function CheckoutPage() {
 
   const validateForm = () => {
     const newErrors = {};
-
     if (!formData.fullName.trim()) newErrors.fullName = "Enter your full name.";
-    if (!/^[\d+\-\s()]{7,15}$/.test(formData.phone)) newErrors.phone = "Enter a valid phone number.";
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.email)) newErrors.email = "Enter a valid email.";
+    if (!/^[\\d+\\-\\s()]{7,15}$/.test(formData.phone)) newErrors.phone = "Enter a valid phone number.";
+    if (!/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(formData.email)) newErrors.email = "Enter a valid email.";
     if (!formData.city.trim()) newErrors.city = "Enter your city.";
     if (!formData.address.trim()) newErrors.address = "Enter your address.";
     if (!/^[0-9]{5,6}$/.test(formData.postalCode)) newErrors.postalCode = "Enter a valid postal code.";
@@ -34,10 +34,26 @@ function CheckoutPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      alert("Order placed! Thank you for your purchase.");
+    if (!validateForm()) return;
+
+    const shippingInfo = { ...formData };
+    delete shippingInfo.paymentMethod;
+
+    try {
+      const orderData = {
+        items: [], // you’d normally pull this from cart context or backend
+        shippingInfo,
+        paymentMethod: formData.paymentMethod,
+      };
+      const response = await placeOrder(orderData, token);
+      if (response._id) {
+        alert("Order placed! Thank you for your purchase.");
+      }
+    } catch (err) {
+      alert("Failed to place order.");
+      console.error(err);
     }
   };
 

@@ -1,7 +1,7 @@
-// src/pages/AuthPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "../style/AuthPage.css";
+import { login, register } from '../api/auth';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -27,14 +27,18 @@ export default function AuthPage() {
     }
 
     try {
-      // Simulate API request (replace with real API request)
-      const fakeToken = 'fake-jwt-token';
-      localStorage.setItem('token', fakeToken);
+      const response = isLogin
+        ? await login(email, password)
+        : await register(email, password);
 
-      // Redirect to homepage after login
-      navigate('/');
+      if (response.token) {
+        localStorage.setItem('token', response.token);
+        navigate('/');
+      } else {
+        throw new Error(response.error || 'Unexpected error');
+      }
     } catch (err) {
-      setError('Authentication error. Please check your credentials.');
+      setError(err.message || 'Authentication error');
     }
   };
 

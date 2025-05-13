@@ -1,17 +1,9 @@
-// src/pages/CatalogPage.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import FilterSidebar from "../components/FilterSidebar";
 import "../style/CatalogPage.css";
 import "../style/CartModal.css";
-
-// Продукты (пример)
-const sampleProducts = Array.from({ length: 20 }, (_, i) => ({
-  id: i + 1,
-  name: `Product ${i + 1}`,
-  price: Math.floor(Math.random() * 20000) + 500,
-  image: "/images/product.png",
-}));
+import { fetchProducts } from "../api/products";
 
 function CatalogPage() {
   const [filters, setFilters] = useState({
@@ -20,26 +12,38 @@ function CatalogPage() {
     color: [],
     size: [],
     material: [],
-    priceRange: [0, 50000]
+    priceRange: [0, 50000],
   });
 
   const [cart, setCart] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [cartModal, setCartModal] = useState(false);
-  const [filteredProducts, setFilteredProducts] = useState([...sampleProducts]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  useEffect(() => {
+    fetchProducts().then((products) => {
+      setAllProducts(products);
+      setFilteredProducts(products);
+    }).catch((err) => console.error("Failed to load products:", err));
+  }, []);
 
   useEffect(() => {
     applyFilters();
-  }, [filters]);
+  }, [filters, allProducts]);
 
   const applyFilters = () => {
     setFilteredProducts(
-      sampleProducts.filter((product) => {
+      allProducts.filter((product) => {
         if (filters.category.length > 0 && !filters.category.includes(product.category)) return false;
         if (filters.color.length > 0 && !filters.color.includes(product.color)) return false;
         if (filters.size.length > 0 && !filters.size.includes(product.size)) return false;
         if (filters.material.length > 0 && !filters.material.includes(product.material)) return false;
-        if (filters.priceRange.length > 0 && (product.price < filters.priceRange[0] || product.price > filters.priceRange[1])) return false;
+        if (
+          filters.priceRange.length > 0 &&
+          (product.price < filters.priceRange[0] || product.price > filters.priceRange[1])
+        )
+          return false;
         return true;
       })
     );
@@ -61,10 +65,9 @@ function CatalogPage() {
   const toggleFavorite = (product) => {
     setFavorites((prevFavorites) => {
       const isFavorite = prevFavorites.some((item) => item.id === product.id);
-      if (isFavorite) {
-        return prevFavorites.filter((item) => item.id !== product.id);
-      }
-      return [...prevFavorites, product];
+      return isFavorite
+        ? prevFavorites.filter((item) => item.id !== product.id)
+        : [...prevFavorites, product];
     });
   };
 
@@ -77,16 +80,16 @@ function CatalogPage() {
       <FilterSidebar filters={filters} onChange={setFilters} />
       <div className="product-list">
         {filteredProducts.map((product) => (
-          <div className="product-card" key={product.id}>
-            <Link to={`/product/${product.id}`}>
+          <div className="product-card" key={product._id || product.id}>
+            <Link to={`/product/${product._id || product.id}`}>
               <img src={product.image} alt={product.name} className="product-image" />
             </Link>
             <h4>{product.name}</h4>
             <p>{product.price} €</p>
             <div className="product-actions">
               <button className="add-to-cart-btn" onClick={() => addToCart(product)}>Add to Cart</button>
-              <div 
-                className="favorite-icon" 
+              <div
+                className="favorite-icon"
                 onClick={() => toggleFavorite(product)}
                 style={{ cursor: "pointer", fontSize: "18px" }}
               >
@@ -97,7 +100,6 @@ function CatalogPage() {
         ))}
       </div>
 
-      {/* Модальная корзина */}
       {cartModal && (
         <div className="cart-modal-overlay" onClick={(e) => e.target === e.currentTarget ? setCartModal(false) : null}>
           <div className="cart-modal-content">
