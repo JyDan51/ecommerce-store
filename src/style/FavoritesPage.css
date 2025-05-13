@@ -1,0 +1,78 @@
+/* src/style/FavoritesPage.css */
+.favorites-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+}
+
+.favorites-page h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #333;
+  text-align: center;
+}
+
+.favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.favorite-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: box-shadow 0.3s;
+}
+
+.favorite-card:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.favorite-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.favorite-details {
+  flex-grow: 1;
+  margin-left: 15px;
+}
+
+.favorite-details h4 {
+  font-size: 16px;
+  color: #333;
+}
+
+.favorite-details p {
+  font-size: 14px;
+  color: #666;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.remove-btn:hover {
+  color: #c0392b;
+}
+
+.empty-favorites {
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+}

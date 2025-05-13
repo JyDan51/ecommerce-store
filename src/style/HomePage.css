@@ -1,0 +1,54 @@
+/* src/style/HomePage.css */
+.home-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.home-page h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.home-page p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.home-categories {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.category-card {
+  background-color: #ffffff;
+  padding: 15px 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  flex: 1 1 200px;
+  text-align: center;
+  transition: box-shadow 0.3s;
+}
+
+.category-card:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.category-card h3 {
+  font-size: 20px;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.category-card p {
+  font-size: 14px;
+  color: #666;
+}
